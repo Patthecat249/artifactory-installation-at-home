@@ -1,0 +1,6 @@
+---
+# handlers file for artifactory
+- name: Restart Firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: reloaded

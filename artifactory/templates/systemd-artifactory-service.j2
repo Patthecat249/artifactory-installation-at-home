@@ -1,0 +1,16 @@
+[Unit]
+Description=Artifactory service
+After=network.target
+
+[Service]
+Type=forking
+GuessMainPID=yes
+Restart=always
+RestartSec=60
+PIDFile=/var/run/artifactory.pid
+ExecStart={{dir_downloads}}artifactory-jcr-{{jfrog_version}}/app/bin/artifactoryManage.sh start
+ExecStop={{dir_downloads}}artifactory-jcr-{{jfrog_version}}/app/bin/artifactoryManage.sh stop  
+
+[Install]
+WantedBy=multi-user.target
+Alias=artifactory.service
