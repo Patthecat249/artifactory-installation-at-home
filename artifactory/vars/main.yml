@@ -1,5 +1,6 @@
 ---
 # vars file for artifactory
+dns_name: "artifactory.home.local"
 dir_root: "/jfrog/"
 dir_downloads: "{{dir_root}}downloads/"
 dir_ssl_certs: "{{dir_root}}ssl-certs/"

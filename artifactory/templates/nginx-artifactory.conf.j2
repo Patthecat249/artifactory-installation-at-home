@@ -13,14 +13,14 @@ ssl_prefer_server_ciphers   on;
 server {
     listen 443 ssl;
 
-    server_name ~(?<repo>.+)\.artifactory.home.local artifactory.home.local;
+    server_name ~(?<repo>.+)\.{{ dns_name }} {{ dns_name }};
 
     if ($http_x_forwarded_proto = '') {
         set $http_x_forwarded_proto  $scheme;
     }
     ## Application specific logs
-    ## access_log /var/log/nginx/artifactory.home.local-access.log timing;
-    ## error_log /var/log/nginx/artifactory.home.local-error.log;
+    ## access_log /var/log/nginx/{{ dns_name }}-access.log timing;
+    ## error_log /var/log/nginx/{{ dns_name }}-error.log;
     rewrite ^/$ /ui/ redirect;
     rewrite ^/ui$ /ui/ redirect;
     rewrite ^/(v1|v2)/(.*) /artifactory/api/docker/$repo/$1/$2;
@@ -33,7 +33,7 @@ server {
     proxy_buffer_size 128k;
     proxy_buffers 40 128k;
     proxy_busy_buffers_size 128k;
-    proxy_pass          http://artifactory.home.local:8082;
+    proxy_pass          http://{{ dns_name }}:8082;
     proxy_set_header    X-JFrog-Override-Base-Url $http_x_forwarded_proto://$host:$server_port;
     proxy_set_header    X-Forwarded-Port  $server_port;
     proxy_set_header    X-Forwarded-Proto $http_x_forwarded_proto;
@@ -41,7 +41,7 @@ server {
     proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
 
         location ~ ^/artifactory/ {
-            proxy_pass    http://artifactory.home.local:8081;
+            proxy_pass    http://{{ dns_name }}:8081;
         }
     }
 }

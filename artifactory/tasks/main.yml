@@ -21,6 +21,8 @@
       - "python3-libsemanage"
       - "policycoreutils-devel.x86_64"
       - "setroubleshoot-server.x86_64"
+      - "setools-console-4.3.0-5.el8.x86_64"
+      - "net-tools-2.0-0.52.20160912git.el8.x86_64" # Needed for Artifactory
     state: "present"
 
 # Create some working directories
@@ -34,24 +36,23 @@
     recurse: true
   loop:
     - "{{dir_root}}"
-    - "{{dir_downloads}}"
     - "{{dir_ssl_certs}}"
 
 # Download Binaries
-- name: Download jfrog Binaries
+- name: Download jfrog tar.gz
   get_url:
     url: "{{jfrog_download_url}}"
-    dest: "{{dir_downloads}}{{jfrog_filename}}"
+    dest: "{{dir_root}}{{jfrog_filename}}"
 
 # Unarchive Binary
-- name: "Unarchive jfrog binary"
+- name: "Unarchive jfrog tar.gz"
   unarchive:
-    src: "{{dir_downloads}}{{jfrog_filename}}"
-    dest: "{{ dir_downloads }}"
+    src: "{{dir_root}}{{jfrog_filename}}"
+    dest: "{{ dir_root }}"
     remote_src: yes
 
 # Open some firewall ports
-- name: "Open some firewall-ports"
+- name: "Firewall - Open http and https firewall-services"
   firewalld:
     service: "{{item}}"
     permanent: yes
@@ -60,7 +61,7 @@
     - "http"
     - "https"
 
-- name: Allow to open some Firewall-Ports
+- name: "Firewall - Open some firewall-ports"
   ansible.posix.firewalld:
     port: "{{item}}"
     permanent: true
@@ -95,7 +96,7 @@
 - name: "Copy artifactory.config.import.xml to start Artifactory with predefined config"
   copy:
     src: artifactory.config.import.xml
-    dest: "{{dir_downloads}}artifactory-jcr-{{jfrog_version}}/var/etc/artifactory/artifactory.config.import.xml"
+    dest: "{{dir_root}}artifactory-jcr-{{jfrog_version}}/var/etc/artifactory/artifactory.config.import.xml"
 
 # chown -R artifactory:artifactory /jfrog/downloads/artifactory-jcr-7.27.6/app
 # Change Ownership of jfrog-App-Directory
@@ -117,7 +118,7 @@
   tags:
     - selinux
 
-- name: Restorecon on tftproot_path
+- name: Restorecon on jfrog-root-dir
   command: "/usr/sbin/restorecon -Rv {{ dir_ssl_certs }}" 
   tags:
     - selinux
