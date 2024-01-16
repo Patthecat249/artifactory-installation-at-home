@@ -123,7 +123,7 @@
   tags:
     - selinux
 # Start Artifactory via systemd
-# /jfrog/downloads/artifactory-jcr-7.27.6/app/bin/artifactoryctl start
+# /jfrog/downloads/artifactory-jcr-7.27.6/app/bin/artifactory.sh start
 - name: "Copy template-systemd-file to systemd"
   template:
     src: "templates/systemd-artifactory-service.j2"
