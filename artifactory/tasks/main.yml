@@ -86,17 +86,23 @@
     - "password-for-private-key"
 
 # Configure Nginx
+- name: "Template /etc/nginx/nginx.conf for Artifactory"
+  template:
+    src: "templates/nginx.conf.j2"
+    dest: "/etc/nginx/nginx.conf"
+
 - name: "Template nginx.conf for Artifactory"
   template:
     src: "templates/nginx-artifactory.conf.j2"
     dest: "/etc/nginx/conf.d/nginx-artifactory.conf"
 
+
 # Copy artifactory.config.latest.xml for bootstrapping
 # $JFROG_HOME/artifactory/var/etc/artifactory/artifactory.config.import.xml
-- name: "Copy artifactory.config.import.xml to start Artifactory with predefined config"
-  copy:
-    src: artifactory.config.import.xml
-    dest: "{{dir_root}}artifactory-jcr-{{jfrog_version}}/var/etc/artifactory/artifactory.config.import.xml"
+# - name: "Copy artifactory.config.import.xml to start Artifactory with predefined config"
+#   copy:
+#     src: artifactory.config.import.xml
+#     dest: "{{dir_root}}artifactory-jcr-{{jfrog_version}}/var/etc/artifactory/artifactory.config.import.xml"
 
 # chown -R artifactory:artifactory /jfrog/downloads/artifactory-jcr-7.27.6/app
 # Change Ownership of jfrog-App-Directory
@@ -115,11 +121,13 @@
     target: "{{ dir_ssl_certs | regex_replace('/$') }}(/.*)?"
     setype: httpd_sys_content_t
     state: present
+  when: selinux_is_enabled
   tags:
     - selinux
 
 - name: Restorecon on jfrog-root-dir
   command: "/usr/sbin/restorecon -Rv {{ dir_ssl_certs }}" 
+  when: selinux_is_enabled
   tags:
     - selinux
 # Start Artifactory via systemd
