@@ -96,6 +96,11 @@
     src: "templates/nginx-artifactory.conf.j2"
     dest: "/etc/nginx/conf.d/nginx-artifactory.conf"
 
+# Accept Eula
+- name: "Template eula-accept.yaml for Artifactory"
+  template:
+    src: "templates/eula-accept.yaml"
+    dest: "{{dir_install}}/var/etc/artifactory/artifactory.config.import.yml"
 
 # Copy artifactory.config.latest.xml for bootstrapping
 # $JFROG_HOME/artifactory/var/etc/artifactory/artifactory.config.import.xml
@@ -151,12 +156,14 @@
   ansible.builtin.systemd:
     state: started
     name: nginx
+    enabled: true
   tags:
     - systemd
 # Start Artifactory via systemd
 - name: Make sure a artifactory-service unit is running
   ansible.builtin.systemd:
     state: started
+    enabled: true
     name: artifactory.service
   tags:
     - systemd

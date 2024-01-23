@@ -1,0 +1,8 @@
+GeneralConfiguration: 
+  eula: 
+    accepted: true
+    
+OnboardingConfiguration:
+  repoTypes:
+    - docker
+    - helm
