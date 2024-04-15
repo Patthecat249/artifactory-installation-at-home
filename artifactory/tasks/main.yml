@@ -11,19 +11,20 @@
     - user
 
 # Install some tools
-# - name: "Install some tools when Rocky"
-#   yum:
-#     name: 
-#       - "wget"
-#       - "tar"
-#       - "unzip"
-#       - "nginx"
-#       - "python3-libsemanage"
-#       - "policycoreutils-devel.x86_64"
-#       - "setroubleshoot-server.x86_64"
-#       - "setools-console-4.3.0-5.el8.x86_64"
-#       - "net-tools-2.0-0.52.20160912git.el8.x86_64" # Needed for Artifactory
-#     state: "present"
+- name: "Install some tools when Rocky"
+  yum:
+    name: 
+      - "wget"
+      - "tar"
+      - "unzip"
+      - "nginx"
+      - "python3-libsemanage"
+      - "policycoreutils-devel.x86_64"
+      - "setroubleshoot-server.x86_64"
+      - "setools-console-4.3.0-5.el8.x86_64"
+      - "net-tools-2.0-0.52.20160912git.el8.x86_64" # Needed for Artifactory
+    state: "present"
+  when: ansible_distribution == 'Rocky'
 
 - name: "Install some tools when RHEL"
   yum:
@@ -36,7 +37,7 @@
       - "policycoreutils-devel.x86_64"
       - "setroubleshoot-server.x86_64"
       - "setools.x86_64"
-      - "net-tools-2.0-0.52.20160912git.el8.x86_64" # Needed for Artifactory
+      - "net-tools.x86_64" # Needed for Artifactory
     state: "present"
   when: ansible_distribution == 'RedHat'
 
@@ -66,15 +67,15 @@
     dest: "{{ dir_root }}"
     remote_src: yes
 
-# Open some firewall ports
-- name: "Firewall - Open http and https firewall-services"
-  firewalld:
-    service: "{{item}}"
-    permanent: yes
-    state: "enabled"
-  with_items:
-    - "http"
-    - "https"
+# # Open some firewall ports
+# - name: "Firewall - Open http and https firewall-services"
+#   firewalld:
+#     service: "{{item}}"
+#     permanent: yes
+#     state: "enabled"
+#   with_items:
+#     - "http"
+#     - "https"
 
 - name: "Firewall - Open some firewall-ports"
   ansible.posix.firewalld:
@@ -135,21 +136,28 @@
     group: artifactory
   tags:
     - user
-# Set Selinux Policies
-- name: Add custom SELinux fcontext
-  sefcontext:
-    target: "{{ dir_ssl_certs | regex_replace('/$') }}(/.*)?"
-    setype: httpd_sys_content_t
-    state: present
-  when: selinux_is_enabled
-  tags:
-    - selinux
 
-- name: Restorecon on jfrog-root-dir
-  command: "/usr/sbin/restorecon -Rv {{ dir_ssl_certs }}" 
-  when: selinux_is_enabled
-  tags:
-    - selinux
+# # Get SELinux-Status
+# - name: Get SELinux-Status
+#   set_fact:
+#     selinux_status: "{{ ansible_selinux.status | default('disabled') }}"
+
+# # Set Selinux Policies
+# - name: Add custom SELinux fcontext
+#   sefcontext:
+#     target: "{{ dir_ssl_certs | regex_replace('/$') }}(/.*)?"
+#     setype: httpd_sys_content_t
+#     state: present
+#   when: selinux_status == 'enforcing'
+#   tags:
+#     - selinux
+
+# - name: Restorecon on jfrog-root-dir
+#   command: "/usr/sbin/restorecon -Rv {{ dir_ssl_certs }}" 
+#   when: selinux_status == 'enforcing'
+#   tags:
+#     - selinux
+
 # Start Artifactory via systemd
 # /jfrog/downloads/artifactory-jcr-7.27.6/app/bin/artifactory.sh start
 - name: "Copy template-systemd-file to systemd"

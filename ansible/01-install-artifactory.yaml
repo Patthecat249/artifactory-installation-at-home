@@ -1,7 +1,7 @@
 # This is the main playbook, which loads all sub-plays with all the tasks and executes them step by step
 
 - hosts: artifactory
-  gather_facts: false
+  gather_facts: true
   become: yes
   tasks:
 # Install all the prerequisites on the remote PXE-Server. We need some Services which.
