@@ -11,3 +11,13 @@ jfrog_version: "7.71.9"
 # jfrog_version: "7.27.6"
 jfrog_filename: "jfrog-artifactory-jcr-{{jfrog_version}}-linux.tar.gz"
 jfrog_download_url: "https://releases.jfrog.io/artifactory/bintray-artifactory/org/artifactory/jcr/jfrog-artifactory-jcr/{{jfrog_version}}/jfrog-artifactory-jcr-{{jfrog_version}}-linux.tar.gz"
+
+# OpenShift
+version_openshift: "4.12.42"
+link_to_oc: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/{{version_openshift}}/openshift-client-linux-{{version_openshift}}.tar.gz"
+link_to_openshift_installer: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/{{version_openshift}}/openshift-install-linux-{{version_openshift}}.tar.gz"
+link_to_oc_mirror: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/{{version_openshift}}/oc-mirror.tar.gz"
+
+file_oc: "openshift-client-linux-{{version_openshift}}.tar.gz"
+file_openshift_installer: "openshift-install-linux-{{version_openshift}}.tar.gz"
+file_oc_mirror: "oc-mirror.tar.gz"

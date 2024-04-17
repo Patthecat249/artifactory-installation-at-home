@@ -54,6 +54,7 @@
   loop:
     - "{{dir_root}}"
     - "{{dir_ssl_certs}}"
+    - "{{dir_downloads}}"
 
 # Download Binaries
 - name: Download jfrog tar.gz
@@ -61,12 +62,70 @@
     url: "{{jfrog_download_url}}"
     dest: "{{dir_root}}{{jfrog_filename}}"
 
+# Download oc-client
+- name: "Download OpenShift - oc-client"
+  get_url:
+    url="{{link_to_oc}}"
+    dest="{{ dir_downloads }}{{file_oc}}"
+  register: get_oc
+
+# Download oc-mirror-client
+- name: "Download OpenShift - oc-mirror-client"
+  get_url:
+    url="{{link_to_oc_mirror}}"
+    dest="{{ dir_downloads }}{{file_oc_mirror}}"
+  register: get_oc_mirror
+
+# Download openshift-installer
+- name: "Download OpenShift - openshift-installer"
+  get_url:
+    url="{{link_to_openshift_installer}}"
+    dest="{{ dir_downloads }}{{file_openshift_installer}}"
+  register: get_installer
+
 # Unarchive Binary
 - name: "Unarchive jfrog tar.gz"
   unarchive:
     src: "{{dir_root}}{{jfrog_filename}}"
     dest: "{{ dir_root }}"
     remote_src: yes
+
+# Extraction of zip-archive
+- name: "Unarchive the oc-client"
+  unarchive:
+    src: "{{ dir_downloads }}openshift-client-linux-{{version_openshift}}.tar.gz"
+    dest: "{{ dir_downloads }}"
+    remote_src: "true"
+
+# Extraction of zip-archive
+- name: "Unarchive the oc-mirror-client"
+  unarchive:
+    src: "{{ dir_downloads }}{{file_oc_mirror}}"
+    dest: "{{ dir_downloads }}"
+    remote_src: "true"
+
+# Extraction of zip-archive
+- name: "Unarchive the openshift-installer"
+  unarchive:
+    src: "{{ dir_downloads }}openshift-install-linux-{{version_openshift}}.tar.gz"
+    dest: "{{ dir_downloads }}"
+    remote_src: "true"
+
+# Make oc executable >> copy to /usr/local/bin/oc
+- name: "copy oc to /usr/local/bin and make executable"
+  copy:
+    src: "{{ dir_downloads }}oc"
+    dest: "/usr/local/bin/oc"
+    mode: "0755"
+    remote_src: "true"
+
+# Make openshift-installer executable >> copy to /usr/local/bin/openshift-install
+- name: "copy openshift-install to /usr/local/bin and make executable"
+  copy:
+    src: "{{ dir_downloads }}openshift-install"
+    dest: "/usr/local/bin/openshift-install"
+    mode: "0755"
+    remote_src: "true"
 
 # # Open some firewall ports
 # - name: "Firewall - Open http and https firewall-services"
