@@ -21,8 +21,8 @@
       - "python3-libsemanage"
       - "policycoreutils-devel.x86_64"
       - "setroubleshoot-server.x86_64"
-      - "setools-console-4.3.0-5.el8.x86_64"
-      - "net-tools-2.0-0.52.20160912git.el8.x86_64" # Needed for Artifactory
+      - "setools-console-4.4.4-1.el9.x86_64"
+      - "net-tools-2.0-0.62.20160912git.el9.x86_64" # Needed for Artifactory
     state: "present"
   when: ansible_distribution == 'Rocky'
 
